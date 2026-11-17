@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pearl Frontier (PF) — Sovereign Square</title>
+  <link rel="stylesheet" href="styles.css">
+  <meta name="theme-color" content="#FFFFFF">
+  
+  <!-- Firebase SDKs (Compat v9) for real storage & cloud sync -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Hidden global file pickers for Admin Mode -->
+    <input type="file" id="adminAvatarPicker" accept="image/*" style="display:none;" onchange="handleAdminAvatarUpload(event)">
+    <input type="file" id="adminMediaPicker" accept="image/*,video/*" style="display:none;" onchange="handleAdminMediaUpload(event)">
+    <input type="file" id="adminReelPicker" accept="video/mp4,video/*" style="display:none;" onchange="handleAdminReelUpload(event)">
+
+    <!-- ======================================================================
+         TOP HEADER (Minimalist: Pure Floating "Pearl Frontier" Logo on left)
+         Clicking Logo Triggers Admin Authentication!
+         ====================================================================== -->
+    <header class="top-header">
+      <!-- Top Left: Pure Floating Wordmark (Secret Admin Door) -->
+      <div class="pf-logo-badge" id="pfLogoBtn" title="Click to unlock Admin Management" onclick="handleLogoClick()">
+        <svg class="pf-logo-svg" id="pfLogoSvg" viewBox="0 0 226 36" style="width:165px;" xmlns="http://www.w3.org/2000/svg">
+          <!-- Rendered via app.js -->
+        </svg>
+      </div>
+
+      <!-- Center Admin pill (only shows when unlocked) -->
+      <div class="header-center-info">
+        <span class="admin-indicator-pill" id="adminPill" onclick="toggleAdminPanel()">
+          ● ADMIN MODE
+        </span>
+      </div>
+
+      <!-- Top Right: Theme Toggle + Three Dots Settings Menu -->
+      <div class="header-actions">
+        <button class="icon-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+          <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+
+        <button class="icon-btn" id="threeDotsBtn" title="Account, Privacy, Badges & Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="5" cy="12" r="2"></circle>
+            <circle cx="12" cy="12" r="2"></circle>
+            <circle cx="19" cy="12" r="2"></circle>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         MAIN VIEWPORT
+         ====================================================================== -->
+    <main class="main-viewport">
+
+      <!-- ====================================================================
+           TAB 1: THE WIRE (Feed - Outermost Left)
+           Features 5 Starting Posts: Gold, Crimson, Blue, Bronze, Silver
+           ==================================================================== -->
+      <section class="tab-view active" id="tab-wire">
+        <!-- Sub-filter Pills -->
+        <div class="sub-filter-bar">
+          <button class="pill-filter active" data-filter="all">All Dispatches</button>
+          <button class="pill-filter" data-filter="gold">1. State Gold</button>
+          <button class="pill-filter" data-filter="crimson">2. Security Crimson</button>
+          <button class="pill-filter" data-filter="blue">3. Corporate Blue</button>
+          <button class="pill-filter" data-filter="bronze">4. Celebrity Bronze</button>
+          <button class="pill-filter" data-filter="silver">5. Citizen Silver</button>
+        </div>
+
+        <!-- Feed List Container -->
+        <div id="postsList">
+
+          <!-- POST 1: 🟡 GOLD BADGE (State Leadership) -->
+          <article class="post-card" id="post-mk" data-category="gold">
+            <div class="post-avatar-wrapper">
+              <div class="avatar" id="avatar-mk" style="background: #1E293B; color: #F59E0B;">MK</div>
+            </div>
+            <div class="post-content">
+              <div class="post-header">
+                <div class="post-author-info">
+                  <span class="author-name">
+                    <span id="name-mk">Gen. Muhoozi Kainerugaba</span>
+                    <!-- 🟡 Gold Check -->
+                    <span class="verified-check-badge" title="Sovereign Gold Check — State Leadership (Earned)">
+                      <svg class="badge-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#EAB308"/>
+                        <path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  </span>
+                  <span class="author-handle" id="handle-mk">@mkainerugaba</span>
+                </div>
+                <span class="post-time" id="time-mk">14m</span>
+              </div>
+              <p class="post-text" id="text-mk">Our national security posture and sovereign defense doctrine remain steadfast. Uganda's peace, stability, and territorial integrity will never be compromised by any external actor. 
+
+Proud of our brave UPDF personnel and the patriotic youth standing tall on the Pearl Frontier. East African unity is our destiny! 🇺🇬</p>
+              
+              <div class="post-media" id="media-mk" style="display:none;"></div>
+
+              <!-- Admin Edit Controls for Post 1 -->
+              <div class="admin-post-bar">
+                <span style="font-weight:700; color:var(--accent-gold);">⚙️ Admin:</span>
+                <button class="admin-action-btn" onclick="triggerAvatarUpload('post-mk')">📷 Change Avatar</button>
+                <button class="admin-action-btn" onclick="triggerMediaUpload('post-mk')">🖼️ Add/Change Media</button>
+                <button class="admin-action-btn" onclick="triggerTextEdit('post-mk')">✏️ Edit Text</button>
+              </div>
+
+              <div class="post-actions">
+                <button class="action-btn like-btn" onclick="toggleLike(this, 14200)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span class="count">14.2K</span></button>
+                <button class="action-btn repost-btn" onclick="toggleRepost(this, 3840)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg><span class="count">3.8K</span></button>
+                <button class="action-btn comment-btn" onclick="openCommentModal('Gen. Muhoozi Kainerugaba')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><span class="count">924</span></button>
+                <button class="action-btn share-btn" onclick="sharePost('Gen. Muhoozi Kainerugaba')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></button>
+              </div>
+            </div>
+          </article>
+
+          <!-- POST 2: 🔴 CRIMSON BADGE (State Security / Police) -->
+          <article class="post-card" id="post-police" data-category="crimson">
+            <div class="post-avatar-wrapper">
+              <div class="avatar" id="avatar-police" style="background: #991B1B; color: #FFFFFF;">UP</div>
+            </div>
+            <div class="post-content">
+              <div class="post-header">
+                <div class="post-author-info">
+                  <span class="author-name">
+                    <span id="name-police">Uganda Police Force</span>
+                    <!-- 🔴 Crimson Shield Check -->
+                    <span class="verified-check-badge" title="Crimson Shield Check — State Security (Earned)">
+                      <svg class="badge-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L20 5.5V12C20 17 16.5 21.5 12 23C7.5 21.5 4 17 4 12V5.5L12 2Z" fill="#EF4444"/>
+                        <path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  </span>
+                  <span class="author-handle" id="handle-police">@ugabor_traffic</span>
+                </div>
+                <span class="post-time" id="time-police">1h</span>
+              </div>
+              <p class="post-text" id="text-police">Public Safety Advisory: Kampala Metropolitan Traffic Division has deployed patrol units along Northern Bypass. Speed cameras active. Drive safely and protect our citizens.</p>
+              
+              <div class="post-media" id="media-police" style="display:none;"></div>
+
+              <!-- Admin Edit Controls for Post 2 -->
+              <div class="admin-post-bar">
+                <span style="font-weight:700; color:var(--accent-gold);">⚙️ Admin:</span>
+                <button class="admin-action-btn" onclick="triggerAvatarUpload('post-police')">📷 Change Avatar</button>
+                <button class="admin-action-btn" onclick="triggerMediaUpload('post-police')">🖼️ Add/Change Media</button>
+                <button class="admin-action-btn" onclick="triggerTextEdit('post-police')">✏️ Edit Text</button>
+              </div>
+
+              <div class="post-actions">
+                <button class="action-btn like-btn" onclick="toggleLike(this, 3420)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span class="count">3.4K</span></button>
+                <button class="action-btn repost-btn" onclick="toggleRepost(this, 890)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg><span class="count">890</span></button>
+                <button class="action-btn comment-btn" onclick="openCommentModal('Uganda Police')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><span class="count">210</span></button>
+              </div>
+            </div>
+          </article>
+
+          <!-- POST 3: 🔵 BLUE BADGE (Companies / Corporate) -->
+          <article class="post-card" id="post-mtn" data-category="blue">
+            <div class="post-avatar-wrapper">
+              <div class="avatar" id="avatar-mtn" style="background: #FACC15; color: #000000; font-weight:900;">MTN</div>
+            </div>
+            <div class="post-content">
+              <div class="post-header">
+                <div class="post-author-info">
+                  <span class="author-name">
+                    <span id="name-mtn">MTN Uganda</span>
+                    <!-- 🔵 Blue Corporate Check -->
+                    <span class="verified-check-badge" title="Corporate Blue Check — Verified Company">
+                      <svg class="badge-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#1D9BF0"/>
+                        <path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  </span>
+                  <span class="author-handle" id="handle-mtn">@mtnug</span>
+                </div>
+                <span class="post-time" id="time-mtn">3h</span>
+              </div>
+              <p class="post-text" id="text-mtn">Empowering sovereign East African connectivity! 5G network expansion is now live in Gulu, Jinja, and Mbarara. Seamlessly power your Pearl Frontier dispatches with MoMo data bundles. 📶💛 #TogetherWeAreUnstoppable</p>
+              
+              <div class="post-media" id="media-mtn" style="display:none;"></div>
+
+              <!-- Admin Edit Controls for Post 3 -->
+              <div class="admin-post-bar">
+                <span style="font-weight:700; color:var(--accent-gold);">⚙️ Admin:</span>
+                <button class="admin-action-btn" onclick="triggerAvatarUpload('post-mtn')">📷 Change Avatar</button>
+                <button class="admin-action-btn" onclick="triggerMediaUpload('post-mtn')">🖼️ Add/Change Media</button>
+                <button class="admin-action-btn" onclick="triggerTextEdit('post-mtn')">✏️ Edit Text</button>
+              </div>
+
+              <div class="post-actions">
+                <button class="action-btn like-btn" onclick="toggleLike(this, 5120)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span class="count">5.1K</span></button>
+                <button class="action-btn repost-btn" onclick="toggleRepost(this, 1140)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg><span class="count">1.1K</span></button>
+                <button class="action-btn comment-btn" onclick="openCommentModal('MTN Uganda')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><span class="count">389</span></button>
+              </div>
+            </div>
+          </article>
+
+          <!-- POST 4: 🟠 BRONZE BADGE (Celebrities & Media Personalities) -->
+          <article class="post-card" id="post-kenzo" data-category="bronze">
+            <div class="post-avatar-wrapper">
+              <div class="avatar" id="avatar-kenzo" style="background: #D97706; color: #FFFFFF;">EK</div>
+            </div>
+            <div class="post-content">
+              <div class="post-header">
+                <div class="post-author-info">
+                  <span class="author-name">
+                    <span id="name-kenzo">Eddy Kenzo</span>
+                    <!-- 🟠 Bronze Creator Check -->
+                    <span class="verified-check-badge" title="Bronze Creator Check — Celebrity & Media Personality">
+                      <svg class="badge-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#F97316"/>
+                        <path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  </span>
+                  <span class="author-handle" id="handle-kenzo">@eddykenzoficial</span>
+                </div>
+                <span class="post-time" id="time-kenzo">4h</span>
+              </div>
+              <p class="post-text" id="text-kenzo">Ugandan talent to the world! African music is breaking every border. Proud to see our own Pearl Frontier platform rising for our creators. Big new release dropping next week! 🇺🇬🔥</p>
+              
+              <div class="post-media" id="media-kenzo" style="display:none;"></div>
+
+              <!-- Admin Edit Controls for Post 4 -->
+              <div class="admin-post-bar">
+                <span style="font-weight:700; color:var(--accent-gold);">⚙️ Admin:</span>
+                <button class="admin-action-btn" onclick="triggerAvatarUpload('post-kenzo')">📷 Change Avatar</button>
+                <button class="admin-action-btn" onclick="triggerMediaUpload('post-kenzo')">🖼️ Add/Change Media</button>
+                <button class="admin-action-btn" onclick="triggerTextEdit('post-kenzo')">✏️ Edit Text</button>
+              </div>
+
+              <div class="post-actions">
+                <button class="action-btn like-btn" onclick="toggleLike(this, 18900)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span class="count">18.9K</span></button>
+                <button class="action-btn repost-btn" onclick="toggleRepost(this, 4230)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg><span class="count">4.2K</span></button>
+                <button class="action-btn comment-btn" onclick="openCommentModal('Eddy Kenzo')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><span class="count">1.4K</span></button>
+              </div>
+            </div>
+          </article>
+
+          <!-- POST 5: ⚪ SILVER BADGE (Subscribed Citizens) -->
+          <article class="post-card" id="post-citizen" data-category="silver">
+            <div class="post-avatar-wrapper">
+              <div class="avatar" id="avatar-citizen" style="background: #475569; color: #FFFFFF;">FP</div>
+            </div>
+            <div class="post-content">
+              <div class="post-header">
+                <div class="post-author-info">
+                  <span class="author-name">
+                    <span id="name-citizen">David Mukasa</span>
+                    <!-- ⚪ Silver Citizen Check -->
+                    <span class="verified-check-badge" title="Silver Pearl Check — Subscribed Citizen">
+                      <svg class="badge-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#94A3B8"/>
+                        <path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  </span>
+                  <span class="author-handle" id="handle-citizen">@dmukasa_mak</span>
+                </div>
+                <span class="post-time" id="time-citizen">5h</span>
+              </div>
+              <p class="post-text" id="text-citizen">Just activated my Silver Pearl badge via MoMo! Loving the clean, ad-free feel of Pearl Frontier. It's time our Ugandan conversations had a sovereign home. Makerere engineering students let's connect!</p>
+              
+              <div class="post-media" id="media-citizen" style="display:none;"></div>
+
+              <!-- Admin Edit Controls for Post 5 -->
+              <div class="admin-post-bar">
+                <span style="font-weight:700; color:var(--accent-gold);">⚙️ Admin:</span>
+                <button class="admin-action-btn" onclick="triggerAvatarUpload('post-citizen')">📷 Change Avatar</button>
+                <button class="admin-action-btn" onclick="triggerMediaUpload('post-citizen')">🖼️ Add/Change Media</button>
+                <button class="admin-action-btn" onclick="triggerTextEdit('post-citizen')">✏️ Edit Text</button>
+              </div>
+
+              <div class="post-actions">
+                <button class="action-btn like-btn" onclick="toggleLike(this, 940)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span class="count">940</span></button>
+                <button class="action-btn repost-btn" onclick="toggleRepost(this, 180)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg><span class="count">180</span></button>
+                <button class="action-btn comment-btn" onclick="openCommentModal('David Mukasa')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><span class="count">45</span></button>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 2: THE PAPER (Broadsheet Digital Newspaper)
+           ==================================================================== -->
+      <section class="tab-view" id="tab-paper">
+        <div class="newspaper-container">
+          <div class="newspaper-header">
+            <h1 class="newspaper-masthead-title">The Frontier Gazette</h1>
+            <div class="newspaper-meta">
+              <span>EDITION NO. 001</span>
+              <span>KAMPALA, UGANDA</span>
+              <span>SOVEREIGN ARCHIVE</span>
+            </div>
+          </div>
+
+          <article class="lead-article">
+            <div class="lead-kicker">STRATEGIC DISPATCH • SPECIAL ESSAY</div>
+            <h2 class="lead-headline">Digital Sovereignty: Why East Africa is Building Its Own Platforms</h2>
+            <p class="lead-snippet">When foreign tech corporations can unilaterally silence African institutions and harvest national data with zero local accountability, digital independence ceases to be a luxury—it becomes a national security imperative. The launch of Pearl Frontier marks a decisive pivot toward autonomous civic infrastructure.</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8125rem;">
+              <span style="font-weight:600; color:var(--text-secondary); display:inline-flex; align-items:center; gap:4px;">
+                By Editorial Board • 4 min read
+              </span>
+              <button class="btn-secondary" onclick="alert('Full gazette broadsheet saved to your offline archive!')">Bookmark Gazette</button>
+            </div>
+          </article>
+
+          <div class="article-row">
+            <div class="secondary-article">
+              <div class="article-content">
+                <h3 class="article-headline">UPDF Engineering Brigade Completes New Infrastructure Milestone</h3>
+                <p class="article-meta">National Defense • 2h ago</p>
+              </div>
+              <div class="article-thumb" style="background:#1E293B; display:flex; align-items:center; justify-content:center; color:#F59E0B; font-weight:bold;">UPDF</div>
+            </div>
+
+            <div class="secondary-article">
+              <div class="article-content">
+                <h3 class="article-headline">Uganda's Coffee Exports Reach Record High Across Global Markets</h3>
+                <p class="article-meta">Economy & Trade • 5h ago</p>
+              </div>
+              <div class="article-thumb" style="background:#0F766E; display:flex; align-items:center; justify-content:center; color:#FFFFFF; font-weight:bold;">UGX</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 3: VERTICAL VIDEO REELS (Real Video Playback & Admin Uploader)
+           Supports uploading 2 real MP4 clips to prove the system works!
+           ==================================================================== -->
+      <section class="tab-view" id="tab-clips">
+        <div class="clips-reel-view">
+          
+          <!-- Real HTML5 Video Player -->
+          <video class="reel-video-element" id="mainReelVideo" autoplay loop muted playsinline>
+            <source id="mainReelSource" src="" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+
+          <!-- Top Badge & Reel Switcher -->
+          <div class="clip-badge-tag">🔴 FRONTIER REELS • HD</div>
+          
+          <div class="reel-switcher-tabs">
+            <button class="reel-tab-btn active" id="btnReel1" onclick="switchReelVideo(1)">Reel 1</button>
+            <button class="reel-tab-btn" id="btnReel2" onclick="switchReelVideo(2)">Reel 2</button>
+          </div>
+
+          <!-- Admin Floating Upload Button for Reels -->
+          <div class="admin-reels-upload-bar">
+            <button class="btn-primary" style="padding:6px 14px; font-size:0.75rem; background:#EAB308; color:#000;" onclick="triggerReelUpload()">
+              📹 Upload Video File for <span id="currentReelLabel">Reel 1</span>
+            </button>
+          </div>
+
+          <!-- Video Controls & Metadata Overlay -->
+          <div class="reel-overlay-content">
+            
+            <div class="clip-side-actions">
+              <div class="clip-action-item" onclick="toggleClipLike(this)">
+                <div class="clip-action-circle">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </div>
+                <span class="clip-action-label" id="clipLikesCount">84.5K</span>
+              </div>
+
+              <div class="clip-action-item" onclick="toggleReelSound()">
+                <div class="clip-action-circle" id="reelSoundIcon">
+                  <!-- Muted by default -->
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                </div>
+                <span class="clip-action-label" id="soundLabel">Unmute</span>
+              </div>
+
+              <div class="clip-action-item" onclick="sharePost('Frontier Reel')">
+                <div class="clip-action-circle">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                </div>
+                <span class="clip-action-label">Share</span>
+              </div>
+            </div>
+
+            <div class="clip-info-bottom">
+              <div class="clip-creator">
+                <div class="avatar" style="width:34px; height:34px; background:#F59E0B; color:#000;">PLU</div>
+                <strong style="font-size:0.95rem;" id="reelAuthor">@plu_movement</strong>
+                <span class="verified-check-badge" style="width:16px; height:16px;">
+                  <svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#EAB308"/><path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></svg>
+                </span>
+              </div>
+              <p class="clip-title" id="reelTitle">Youth leadership rally in Mbarara: standing united for patriotism and regional prosperity! 🇺🇬✨</p>
+              <div class="clip-audio-pill">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                <span>Original Audio • Frontier Sessions (Kampala)</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 4: DIRECT MESSAGING (DMs - After Plus)
+           ==================================================================== -->
+      <section class="tab-view" id="tab-dms">
+        <div class="dms-container">
+          <div class="e2e-security-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span><strong>End-to-End Encrypted</strong> • Stored on sovereign infrastructure under Ugandan privacy standards.</span>
+          </div>
+
+          <div id="conversationsList">
+            <div class="dm-list-item" onclick="openChat('CDF Dispatch Office', 'gold')">
+              <div class="post-avatar-wrapper">
+                <div class="avatar" style="background:#1E293B; color:#F59E0B;">CDF</div>
+              </div>
+              <div class="dm-details">
+                <div class="dm-top-line">
+                  <span class="dm-name">
+                    CDF Dispatch Office
+                    <span class="verified-check-badge" style="width:16px; height:16px;"><svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#EAB308"/><path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+                  </span>
+                  <span class="post-time">10:42 AM</span>
+                </div>
+                <p class="dm-preview">Your youth delegate accreditation has been confirmed.</p>
+              </div>
+            </div>
+
+            <div class="dm-list-item" onclick="openChat('MTN Enterprise Helpdesk', 'blue')">
+              <div class="post-avatar-wrapper">
+                <div class="avatar" style="background:#FACC15; color:#000; font-weight:900;">MTN</div>
+              </div>
+              <div class="dm-details">
+                <div class="dm-top-line">
+                  <span class="dm-name">
+                    MTN Enterprise Helpdesk
+                    <span class="verified-check-badge" style="width:16px; height:16px;"><svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#1D9BF0"/><path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+                  </span>
+                  <span class="post-time">Yesterday</span>
+                </div>
+                <p class="dm-preview">MoMo API sandbox credentials for Pearl Frontier ready.</p>
+              </div>
+            </div>
+
+            <div class="dm-list-item" onclick="openChat('Sarah Nalwanga', 'silver')">
+              <div class="post-avatar-wrapper">
+                <div class="avatar" style="background:#7C3AED; color:#FFFFFF;">SN</div>
+              </div>
+              <div class="dm-details">
+                <div class="dm-top-line">
+                  <span class="dm-name">
+                    Sarah Nalwanga
+                    <span class="verified-check-badge" style="width:16px; height:16px;"><svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#94A3B8"/><path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+                  </span>
+                  <span class="post-time">Nov 5</span>
+                </div>
+                <p class="dm-preview">Great presentation outline! See you at 3pm.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 5: PROFILE
+           ==================================================================== -->
+      <section class="tab-view" id="tab-profile">
+        <div class="profile-container">
+          <div class="profile-banner">
+            <div class="profile-avatar-large" id="profileUserAvatar">PF</div>
+          </div>
+
+          <div class="profile-action-row">
+            <button class="btn-secondary" onclick="openSettingsModal()">Badge Directory</button>
+            <button class="btn-secondary" onclick="triggerProfileAvatarUpload()">Change Photo</button>
+          </div>
+
+          <div class="profile-name-block">
+            <div class="profile-full-name">
+              <span>Frontier Pioneer</span>
+              <!-- User Verified Silver Badge -->
+              <span class="verified-check-badge" title="Silver Pearl Check — Subscribed Citizen">
+                <svg class="badge-svg" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#94A3B8"/>
+                  <path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </div>
+            <span class="profile-handle-text">@frontier_pioneer • Kampala, Uganda</span>
+          </div>
+
+          <p class="profile-bio">Advocate for sovereign digital communications, technology innovation, and East African prosperity. Building Uganda's sovereign frontier.</p>
+
+          <div class="profile-stats-row">
+            <div class="stat-item"><strong>1,840</strong> <span>Following</span></div>
+            <div class="stat-item"><strong>14.2K</strong> <span>Followers</span></div>
+            <div class="stat-item"><strong>89</strong> <span>Dispatches</span></div>
+          </div>
+
+          <div class="sub-filter-bar" style="padding:0; margin-bottom:16px;">
+            <button class="pill-filter active">My Dispatches</button>
+            <button class="pill-filter">Saved Gazettes</button>
+            <button class="pill-filter">Media</button>
+          </div>
+
+          <div id="userDispatches">
+            <p style="text-align:center; padding:30px; color:var(--text-secondary); font-size:0.875rem;">Your published dispatches appear here in real-time.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ======================================================================
+         BOTTOM NAVIGATION BAR
+         ====================================================================== -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="wire" onclick="switchTab('wire')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span class="nav-label">The Wire</span>
+      </button>
+
+      <button class="nav-item" data-tab="paper" onclick="switchTab('paper')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path><path d="M18 14h-8"></path><path d="M15 18h-5"></path><path d="M10 6h8v4h-8V6Z"></path></svg>
+        <span class="nav-label">The Paper</span>
+      </button>
+
+      <button class="nav-center-plus" id="composeActionBtn" title="Compose New Dispatch" onclick="openComposeModal()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </button>
+
+      <button class="nav-item" data-tab="clips" onclick="switchTab('clips')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+        <span class="nav-label">Reels</span>
+      </button>
+
+      <button class="nav-item" data-tab="dms" onclick="switchTab('dms')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span class="nav-label">DMs</span>
+      </button>
+    </nav>
+
+    <!-- ======================================================================
+         MODAL 1: COMPOSE DISPATCH
+         ====================================================================== -->
+    <div class="modal-overlay" id="composeModal">
+      <div class="modal-sheet">
+        <div class="modal-header-line">
+          <h3 class="modal-title">New Dispatch</h3>
+          <button class="icon-btn" onclick="closeComposeModal()">&times;</button>
+        </div>
+
+        <textarea class="compose-textarea" id="composeTextInput" placeholder="What is happening across the Frontier? Share your thoughts, dispatch, or insight..."></textarea>
+
+        <div class="compose-toggle-row">
+          <div class="compose-toggle-info">
+            <h4>Sensitive / 18+ Content Flag</h4>
+            <p>Automatically applies protective blur for younger audiences.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="sensitiveToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+          <div style="display:flex; gap:12px; color:var(--text-secondary);">
+            <button class="icon-btn" title="Add Media/Photo" onclick="alert('Select media in composer')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            </button>
+          </div>
+          <button class="btn-primary" onclick="submitDispatch()">Publish Dispatch</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         MODAL 2: SECRET ADMIN AUTH MODAL (Triggered by Logo Click)
+         ====================================================================== -->
+    <div class="modal-overlay" id="adminAuthModal">
+      <div class="modal-sheet">
+        <div class="modal-header-line">
+          <h3 class="modal-title">🔒 Sovereign Admin Authentication</h3>
+          <button class="icon-btn" onclick="closeAdminAuthModal()">&times;</button>
+        </div>
+        <p style="font-size:0.8125rem; color:var(--text-secondary); margin-bottom:14px;">
+          Enter your sovereign administrator key to unlock avatar editing, post media attachments, and real video reels management.
+        </p>
+
+        <input type="password" id="adminPasswordInput" placeholder="Enter Admin Password..." style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--border-light); background:var(--bg-secondary); color:var(--text-primary); font-size:0.95rem; outline:none; margin-bottom:14px;" onkeydown="handleAdminKeypress(event)">
+        
+        <div id="adminErrorMsg" style="color:var(--danger); font-size:0.75rem; margin-bottom:12px; display:none;">
+          Invalid administrator password. Access denied.
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button class="btn-secondary" onclick="closeAdminAuthModal()">Cancel</button>
+          <button class="btn-primary" onclick="verifyAdminPassword()">Unlock Admin Access</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         MODAL 3: TEXT EDIT MODAL (Admin)
+         ====================================================================== -->
+    <div class="modal-overlay" id="adminEditModal">
+      <div class="modal-sheet">
+        <div class="modal-header-line">
+          <h3 class="modal-title">✏️ Edit Dispatch Content</h3>
+          <button class="icon-btn" onclick="closeAdminEditModal()">&times;</button>
+        </div>
+
+        <label style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">Author Display Name:</label>
+        <input type="text" id="editAuthorName" style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-light); background:var(--bg-secondary); color:var(--text-primary); margin-bottom:12px; font-size:0.875rem;">
+
+        <label style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">Handle:</label>
+        <input type="text" id="editAuthorHandle" style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-light); background:var(--bg-secondary); color:var(--text-primary); margin-bottom:12px; font-size:0.875rem;">
+
+        <label style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">Dispatch Text:</label>
+        <textarea id="editPostText" style="width:100%; min-height:100px; padding:10px 12px; border-radius:8px; border:1px solid var(--border-light); background:var(--bg-secondary); color:var(--text-primary); font-size:0.875rem; resize:vertical;"></textarea>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+          <button class="btn-secondary" onclick="closeAdminEditModal()">Cancel</button>
+          <button class="btn-primary" onclick="saveAdminTextEdit()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         MODAL 4: SETTINGS, PRIVACY & CHECKMARK DIRECTORY
+         ====================================================================== -->
+    <div class="modal-overlay" id="settingsModal">
+      <div class="modal-sheet">
+        <div class="modal-header-line">
+          <h3 class="modal-title">Settings & Verification Directory</h3>
+          <button class="icon-btn" onclick="closeSettingsModal()">&times;</button>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Verified Badges & Ticks (5 Tiers)</div>
+          <div class="settings-card">
+            
+            <!-- 1. Gold Check -->
+            <div class="badge-legend-row">
+              <span class="verified-check-badge" style="width:24px; height:24px;"><svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#EAB308"/><path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+              <div class="badge-legend-desc">
+                <div class="badge-legend-title"><span>1. Sovereign Gold Check</span><span class="badge-tier-tag tag-earned">Earned</span></div>
+                <span class="badge-legend-sub">State Leadership (Presidency, CDF, UPDF High Command, Cabinet). Strictly vetted via National ID/NIN & constitutional credentials. Unbuyable.</span>
+              </div>
+            </div>
+
+            <!-- 2. Crimson Shield Check -->
+            <div class="badge-legend-row">
+              <span class="verified-check-badge" style="width:24px; height:24px;"><svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L20 5.5V12C20 17 16.5 21.5 12 23C7.5 21.5 4 17 4 12V5.5L12 2Z" fill="#EF4444"/><path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+              <div class="badge-legend-desc">
+                <div class="badge-legend-title"><span>2. Crimson Shield Check</span><span class="badge-tier-tag tag-earned">Earned</span></div>
+                <span class="badge-legend-sub">State Security & Emergency Services (Uganda Police Force, Disaster Response, Defense Intelligence).</span>
+              </div>
+            </div>
+
+            <!-- 3. Blue Corporate Check -->
+            <div class="badge-legend-row">
+              <span class="verified-check-badge" style="width:24px; height:24px;"><svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#1D9BF0"/><path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+              <div class="badge-legend-desc">
+                <div class="badge-legend-title"><span>3. Corporate Blue Check</span><span class="badge-tier-tag tag-bought">Company Tier</span></div>
+                <span class="badge-legend-sub">Corporations & Registered Companies (MTN Uganda, Stanbic Bank, Airtel, major enterprises).</span>
+              </div>
+            </div>
+
+            <!-- 4. Bronze Creator Check -->
+            <div class="badge-legend-row">
+              <span class="verified-check-badge" style="width:24px; height:24px;"><svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#F97316"/><path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+              <div class="badge-legend-desc">
+                <div class="badge-legend-title"><span>4. Bronze Creator Check</span><span class="badge-tier-tag tag-bought">Celebrity Tier</span></div>
+                <span class="badge-legend-sub">Celebrities, Media Personalities & Cultural Icons (Eddy Kenzo, top journalists, verified musicians).</span>
+              </div>
+            </div>
+
+            <!-- 5. Silver Citizen Check -->
+            <div class="badge-legend-row">
+              <span class="verified-check-badge" style="width:24px; height:24px;"><svg class="badge-svg" viewBox="0 0 24 24" fill="none"><path d="M12 2L14.6 4.3L18.1 4.1L19.2 7.4L22.4 8.9L21.9 12.4L23.5 15.6L20.6 17.6L20.5 21.1L17 21.6L15.2 24.6L12 23.2L8.8 24.6L7 21.6L3.5 21.1L3.4 17.6L0.5 15.6L2.1 12.4L1.6 8.9L4.8 7.4L5.9 4.1L9.4 4.3L12 2Z" fill="#94A3B8"/><path d="M9.5 12.5L11.5 14.5L15.5 10" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+              <div class="badge-legend-desc">
+                <div class="badge-legend-title"><span>5. Silver Pearl Check</span><span class="badge-tier-tag tag-bought">Citizen MoMo</span></div>
+                <span class="badge-legend-sub">Subscribed Patriotic Citizens. KYC identity verified via MTN MoMo / Airtel Money (10,000 UGX/month).</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Privacy & Minor Protection</div>
+          <div class="settings-card">
+            <div class="settings-row">
+              <div>
+                <strong style="font-size:0.875rem;">Under-18 Safety Lock</strong>
+                <p style="font-size:0.75rem; color:var(--text-secondary);">Disables targeted analytics and locks unsolicited DMs.</p>
+              </div>
+              <label class="switch"><input type="checkbox" checked id="under18Toggle"><span class="slider"></span></label>
+            </div>
+            <div class="settings-row">
+              <div>
+                <strong style="font-size:0.875rem;">Download My Archive</strong>
+                <p style="font-size:0.75rem; color:var(--text-secondary);">Full export in compliance with Uganda DPPA 2019.</p>
+              </div>
+              <button class="btn-secondary" style="padding:4px 10px; font-size:0.75rem;" onclick="alert('Your archive is ready.')">Export</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         MODAL 5: ACTIVE DM CHAT VIEW
+         ====================================================================== -->
+    <div class="chat-drawer" id="chatDrawer">
+      <div class="chat-top-bar">
+        <button class="icon-btn" onclick="closeChat()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <div style="flex:1;">
+          <h4 id="chatActiveUser" style="font-size:0.95rem; font-weight:700; display:flex; align-items:center; gap:4px;">CDF Dispatch Office</h4>
+          <span style="font-size:0.7rem; color:var(--success);">● End-to-End Encrypted</span>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg-bubble incoming">
+          Hello! The sovereign digital architecture has been received. Standing by for your live demo.
+        </div>
+        <div class="msg-bubble outgoing">
+          Thank you, General. The 5 badge tiers, live video reels, and admin management suite are fully operational.
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Send an encrypted message..." onkeydown="handleChatKey(event)">
+        <button class="btn-primary" style="padding:8px 16px; border-radius:999px;" onclick="sendChatMessage()">Send</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
